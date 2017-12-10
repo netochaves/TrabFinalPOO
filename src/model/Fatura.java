@@ -1,6 +1,10 @@
 package model;
 
 import DAO.FaturaDAO;
+import controle.AdministradoraCartaoDeCredito;
+import excecoes.CartaoInexistente;
+import excecoes.CartaoInvalido;
+import excecoes.DataInvalida;
 
 public class Fatura {
     private int mes;
@@ -38,5 +42,12 @@ public class Fatura {
 
     public double getValor() {
         return valorTotal;
+    }
+    
+    public double valorDeCompras(int cartao,int mes, int ano) throws CartaoInexistente, DataInvalida, CartaoInvalido {
+    	double s=0;
+    	AdministradoraCartaoDeCredito adm = new AdministradoraCartaoDeCredito();
+    	adm.valorDeCompras(mes, ano, cartao);
+    	return s;
     }
 }

@@ -1,7 +1,7 @@
-<%@page import="model.Estabelecimento"%>
+<%@page import="DAO.FaturaDAO"%>
+<%@page import="model.Fatura"%>
 <%@page import="DAO.EstabelecimentoDAO"%>
-<%@page import="DAO.CompraDAO"%>
-<%@page import="model.Compra"%>
+<%@page import="model.Estabelecimento"%>
 <%@page import="model.Dependente"%>
 <%@page import="DAO.ClientesDAO"%>
 <%@page import="model.Cliente"%>
@@ -22,8 +22,6 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
-    <!-- Date Picker CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.css" />
     <!-- Bootstrap CSS-->
     <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
     <!-- Fontastic Custom icon font-->
@@ -50,7 +48,7 @@
           <!-- Search Box-->
           <div class="search-box">
             <button class="dismiss"><i class="icon-close"></i></button>
-            <form id="searchForm" action="Titular" role="search" method="post">
+            <form id="searchForm" action="Estabelecimento" role="search" method="post">
               <input type="hidden" name="action" value="pesquisar">
               <input type="search" placeholder="O que você está procurando?..." class="form-control" name="pesquisa">   
               <input type="submit" style="visibility: hidden;" />           
@@ -81,7 +79,7 @@
           <div class="sidebar-header d-flex align-items-center">
             <div class="avatar"><img src="img/avatar.png" alt="..." class="img-fluid rounded-circle"></div>
             <div class="title">
-              <h1 class="h4">Neto Chaves</h1>
+              <h1 class="h4">Neto Chaves</h1>	
               <p>Administrador</p>
             </div>
           </div>
@@ -90,11 +88,11 @@
             <li> <a href="index.html"><i class="icon-home"></i>Home</a></li>
             <li><a href="#dashvariants" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Clientes </a>
               <ul id="dashvariants" class="collapse list-unstyled">
-                <li><a href="Titular.jsp">Titulares</a></li>
-                <li><a href="Dependente.jsp">Dependentes</a></li>
+                <li><a href="Titular">Titulares</a></li>
+                <li><a href="Dependente">Dependentes</a></li>
               </ul>
             </li>
-            <li> <a href="Compra.jsp"> <i class="icon-grid"></i>Compras </a></li>
+            <li> <a href="Compra"> <i class="icon-grid"></i>Compras </a></li>
             <li> <a href="charts.html"> <i class="fa fa-bar-chart"></i>Faturas </a></li>
             <li class="active"><a href="forms.html"> <i class="icon-padnote"></i>Pagamentos</a></li>
           </ul>
@@ -110,67 +108,18 @@
           <div class="breadcrumb-holder container-fluid">
             <ul class="breadcrumb">
               <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-              <li class="breadcrumb-item active">Compras</li>
+              <li class="breadcrumb-item active">Forms</li>
             </ul>
           </div>
           <!-- Forms Section-->
           <section class="forms"> 
             <div class="container-fluid">
               <div class="row">
-                <!-- Basic Form-->
-                <div class="col-lg-5">
+                <!-- Basic Form-->               
+                <div class="col-lg-8" style="float:right">
                   <div class="card">
                     <div class="card-header d-flex align-items-center">
-                      <h3 class="h4">Registrar Compra</h3>
-                    </div>
-                    <div class="card-body">
-                    <%ArrayList<String> messages = (ArrayList<String>)request.getAttribute("messages"); %>
-                    <%if(messages!=null){ %>
-                    	<%for(String s : messages){ %>
-                           <div class="alert alert-danger" role="alert">
-  								<strong>Erro!</strong><%=" " + s %>
-						   </div>
-						 <% } %>
-                    <%}%>
-                      <form method="post" action="Compra">
-                        <div class="form-group">
-                          <label class="form-control-label">Cartão</label>
-                          <input type="hidden" name="action" value="inserir">                         
-                          <input type="text" class="form-control" name="cartao" required>
-                        </div>
-                        <div class="form-group">       
-                          <label class="form-control-label">Estabelecimento</label>
-                          <input type="text" class="form-control" name="estabelecimento" required>
-                        </div>
-                        <div class="form-group">       
-                          <label class="form-control-label">Valor</label>
-                          <input type="text"class="form-control" name="valor" required>
-                        </div>
-                        <div class="form-group">       
-                          <label class="form-control-label">Parcelas</label>
-                          <input type="text"class="form-control" name="parcelas" required>
-                        </div>
-                        <div class="form-group">
-		                  <div class="input-group date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
-						    <input type="text" class="form-control" readonly="readonly" name="data">
-						    <div class="input-group-addon">
-						        <span class="glyphicon glyphicon-th"></span>
-						    </div>
-						  </div>
-                		</div>
-                        <div class="form-group">       
-                          <input type="submit" value="Registrar" class="btn btn-primary">
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-7" style="float:right">
-                  <div class="card">
-                    <div class="card-close">
-                    </div>
-                    <div class="card-header d-flex align-items-center">
-                      <h3 class="h4">Compras</h3>
+                      <h3 class="h4">Faturas</h3>
                     </div>
                     <div class="card-body">
                       <table class="table table-bordered table-hover">
@@ -178,27 +127,26 @@
                           <tr>
                             <th>Cartão</th>
                             <th>Data</th>
-                            <th>Estabelecimento</th>
-                            <th>Valor</th>
+                            <th>Compras</th>
+                            <th>Juros</th>
                           </tr>
                         </thead>
-                       <% ArrayList<Compra> compras = (ArrayList<Compra>)request.getAttribute("compras");%>
-                          <%int i=0; %>
-                          	<% if(compras==null){compras = CompraDAO.getAll();} %>
-                          	<% for(Compra c : compras){ %> 
+                       <% ArrayList<Fatura> faturas = (ArrayList<Fatura>)request.getAttribute("faturas");%>
+                          	<% if(faturas==null){faturas = FaturaDAO.getAll();} %>
+                          	<% for(Fatura c : faturas){ %> 
                         <tbody>                              	
-                          	<tr data-toggle="collapse" data-target="#myCollpase<%=i%>" aria-expandede="false" aria-controls="myCollpase<%=i%>">
+                          	<tr>
                           		<td><%=c.getCartao() %></td>
-                          		<%int mes= c.getData().getMonth()+1;%>
-                          		<%int ano= c.getData().getYear()+1900; %>
-                          		<td><%=c.getData().getDate()+"/"+mes+"/"+ano %></td>
-                          		<%Estabelecimento e = EstabelecimentoDAO.pesquisar(c.getEstabelecimento()); %>
-                          		<td><%=e.getNome()%></td>
-                          		<td><%=c.getValor()%></td>                             
+                          		<%int mes=c.getMes()+1;
+                          		  int ano = c.getAno()+1999;
+                          		%>
+                          		<td><%=mes+"/"+ano %></td>
+                          		<td><%=c.valorDeCompras(c.getCartao(), mes, ano) %></td>
+                          		<td><%=ClientesDAO.pesquisarCartao(c.getCartao()).getDebito() %></td>                            
                           	</tr>                         	
                         </tbody>
-                        <%i++; } %>
-                      </table>                         
+                        <%}%>
+                      </table>                            
                     </div>
                   </div>
                 </div>   
@@ -225,7 +173,5 @@
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="vendor/jquery.cookie/jquery.cookie.js"> </script>
     <script src="vendor/jquery-validation/jquery.validate.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
-    <script src="js/front.js"></script>    
   </body>
 </html>
