@@ -82,6 +82,26 @@ public class FaturaDAO {
         }
         return faturas;
     }
+    public static ArrayList<Fatura> getAllCartao(int cartao){
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ArrayList<Fatura> faturas = new ArrayList<>();
+        Fatura f = null;
+        try {
+            stmt = con.prepareStatement("SELECT * FROM fatura WHERE cartao = ?");
+            stmt.setInt(1, cartao);
+            ResultSet rst = stmt.executeQuery();
+            while(rst.next()){
+                f = new Fatura(rst.getInt("mes"),rst.getInt("ano"),rst.getInt("cartao"));
+                faturas.add(f);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            ConnectionFactory.closeConnection(con,stmt);//Fecha a conexao e o statement
+        }
+        return faturas;
+    }
     public static void limpar(){
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;

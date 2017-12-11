@@ -325,6 +325,7 @@ public class ClientesDAO {
     public static Cliente pesquisarCartao(int cpf) {
     	Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
+        
         Cliente c = null;
         try {
             stmt = con.prepareStatement("SELECT * FROM titular WHERE cartao = ?");
@@ -338,7 +339,7 @@ public class ClientesDAO {
                  stmt.setInt(1,cpf);
                  rst = stmt.executeQuery();
                  if(rst.next()){
-                     Dependente d = new Dependente(rst.getInt("cpf"),rst.getString("nome"),rst.getDouble("limite"),rst.getInt("cpfTitular"),rst.getInt("cartao"),rst.getString("endereco"),rst.getString("cidade"),rst.getString("estado"),rst.getDouble("debito"),rst.getDouble("saldo"));
+                    c= new Dependente(rst.getInt("cpf"),rst.getString("nome"),rst.getDouble("limite"),rst.getInt("cpfTitular"),rst.getInt("cartao"),rst.getString("endereco"),rst.getString("cidade"),rst.getString("estado"),rst.getDouble("debito"),rst.getDouble("saldo"));
                  }
             }
         } catch (SQLException e) {
@@ -371,16 +372,19 @@ public class ClientesDAO {
         ArrayList<Cliente> clientes = new ArrayList<>();
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
+        PreparedStatement stmt1 = null;
         ResultSet rst = null;
+        ResultSet rst1 = null;
         try {
             stmt = con.prepareStatement("SELECT * FROM titular");
             rst = stmt.executeQuery();
             while(rst.next()){
-                Cliente c = new Cliente(rst.getInt("cpf"),rst.getString("nome"),rst.getDouble("saldo"),rst.getInt("cartao"));
+                Cliente c = new Cliente(rst.getInt("cpf"),rst.getString("nome"),rst.getDouble("saldo"),rst.getInt("cartao"),rst.getString("endereco"),rst.getString("cidade"),rst.getString("estado"),rst.getDouble("debito"),rst.getDouble("saldo"));
                 clientes.add(c);
             }
-            stmt = con.prepareStatement("SELECT * FROM dependente");
-            rst= stmt.executeQuery();
+            rst.close();
+            stmt1 = con.prepareStatement("SELECT * FROM dependente");
+            rst= stmt1.executeQuery();
             while(rst.next()){
                 Dependente d = new Dependente(rst.getInt("cpf"),rst.getString("nome"),rst.getDouble("limite"),rst.getInt("cpfTitular"),rst.getInt("cartao"),rst.getString("endereco"),rst.getString("cidade"),rst.getString("estado"),rst.getDouble("debito"),rst.getDouble("saldo"));
                 clientes.add(d);
@@ -388,7 +392,8 @@ public class ClientesDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
-            ConnectionFactory.closeConnection(con,stmt,rst);//Fecha a conexao e o statement
+            ConnectionFactory.closeConnection(con,stmt,rst);
+            ConnectionFactory.closeConnection(con,stmt1,rst1);
         }
         return clientes;
     }

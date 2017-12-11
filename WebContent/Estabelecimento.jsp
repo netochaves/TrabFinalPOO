@@ -393,13 +393,5 @@
         	  modal.find('#parcelas').val(parcelas)
         	}) 
  	</script>
- 	<script type="text/javascript">
- 	$(document).ready(function() {
- 		$('[data-toggle="toggle"]').change(function(){
- 			$(this).parents().next('.hide').toggle();
- 		});
- 	});
- 	</script>
-
   </body>
 </html>

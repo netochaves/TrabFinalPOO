@@ -47,7 +47,7 @@ public class Fatura {
     public double valorDeCompras(int cartao,int mes, int ano) throws CartaoInexistente, DataInvalida, CartaoInvalido {
     	double s=0;
     	AdministradoraCartaoDeCredito adm = new AdministradoraCartaoDeCredito();
-    	adm.valorDeCompras(mes, ano, cartao);
+    	s=adm.valorDeCompras(mes, ano, cartao);
     	return s;
     }
 }

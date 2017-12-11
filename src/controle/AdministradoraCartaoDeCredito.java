@@ -131,7 +131,9 @@ public class AdministradoraCartaoDeCredito implements InterfaceCartaoDeCredito {
         checkCartao(cartao);
         checkData(mes,ano);
         Cliente c = ClientesDAO.pesquisarCartao(cartao);
-        if(mes == 12) mes-=1;
+        
+        mes-=1;
+        ano-=1900;
         double s = 0;
         for (Compra compra : CompraDAO.getAll()) {
             if (compra.getCartao() == c.getNumCartao()){
