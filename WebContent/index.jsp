@@ -72,16 +72,16 @@
           </div>
           <!-- Sidebar Navidation Menus--><span class="heading">Main</span>
           <ul class="list-unstyled">
-            <li class="active"> <a href="index.html"><i class="icon-home"></i>Home</a></li>
-            <li><a href="#dashvariants" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Clientes </a>
+            <li> <a href="index.html"><i class="icon-home"></i>Home</a></li>
+            <li><a href="#dashvariants" aria-expanded="false" data-toggle="collapse"> <i class="icon icon-user"></i>Clientes </a>
               <ul id="dashvariants" class="collapse list-unstyled">
-                <li><a href="#">Titulares</a></li>
-                <li><a href="#">Dependentes</a></li>
+                <li><a href="Titular.jsp">Titulares</a></li>
+                <li><a href="Dependente.jsp">Dependentes</a></li>
               </ul>
             </li>
-            <li> <a href="tables.jsp"> <i class="icon-grid"></i>Faturas </a></li>
-            <li> <a href="charts.jsp"> <i class="fa fa-bar-chart"></i>Pagamentos </a></li>
-            <li> <a href="forms.jsp"> <i class="icon-padnote"></i>Compras </a></li>
+            <li> <a href="Estabelecimento"> <i class="icon icon-home"></i>Estabelecimentos </a></li>
+            <li> <a href="Compra"> <i class="icon icon-check"></i>Compras </a></li>
+            <li class="active"><a href="Fatura.jsp"> <i class="icon icon-bill"></i>Faturas</a></li>            
           </ul>
         </nav>
         <div class="content-inner">

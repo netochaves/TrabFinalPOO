@@ -11,8 +11,21 @@ public class Fatura {
     private int ano;
     private int cartao;
     private double valorTotal;
+    private double valorFinal;
 
-    public Fatura(int mes, int ano, int cartao) {
+    public double getValorTotal() {
+		return valorTotal;
+	}
+	public void setValorTotal(double valorTotal) {
+		this.valorTotal = valorTotal;
+	}
+	public double getValorFinal() {
+		return FaturaDAO.getValorFinal(this.getCartao(), this.getMes(), this.getAno());
+	}
+	public void setValorFinal(double valorFinal) {
+		this.valorFinal = valorFinal;
+	}
+	public Fatura(int mes, int ano, int cartao) {
         this.mes = mes;
         this.ano = ano;
         this.cartao = cartao;

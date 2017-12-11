@@ -1,3 +1,4 @@
+<%@page import="controle.AdministradoraCartaoDeCredito"%>
 <%@page import="DAO.FaturaDAO"%>
 <%@page import="model.Fatura"%>
 <%@page import="DAO.EstabelecimentoDAO"%>
@@ -51,7 +52,7 @@
           <div class="search-box">
             <button class="dismiss"><i class="icon-close"></i></button>
             <form id="searchForm" action="Fatura" role="search" method="post">
-              <input type="hidden" name="action" value="pesquisar">
+              <input type="hidden" name="acao" value="pesquisar">
               <input type="search" placeholder="Digite um número de cartão" class="form-control" name="pesquisa">   
               <input type="submit" style="visibility: hidden;" />           
             </form>
@@ -88,15 +89,15 @@
           <!-- Sidebar Navidation Menus--><span class="heading">Main</span>
           <ul class="list-unstyled">
             <li> <a href="index.html"><i class="icon-home"></i>Home</a></li>
-            <li><a href="#dashvariants" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Clientes </a>
+            <li><a href="#dashvariants" aria-expanded="false" data-toggle="collapse"> <i class="icon icon-user"></i>Clientes </a>
               <ul id="dashvariants" class="collapse list-unstyled">
-                <li><a href="Titular">Titulares</a></li>
-                <li><a href="Dependente">Dependentes</a></li>
+                <li><a href="Titular.jsp">Titulares</a></li>
+                <li><a href="Dependente.jsp">Dependentes</a></li>
               </ul>
             </li>
-            <li> <a href="Compra"> <i class="icon-grid"></i>Compras </a></li>
-            <li> <a href="charts.html"> <i class="fa fa-bar-chart"></i>Faturas </a></li>
-            <li class="active"><a href="forms.html"> <i class="icon-padnote"></i>Pagamentos</a></li>
+            <li> <a href="Estabelecimento"> <i class="icon icon-home"></i>Estabelecimentos </a></li>
+            <li> <a href="Compra"> <i class="icon icon-check"></i>Compras </a></li>
+            <li class="active"><a href="Fatura.jsp"> <i class="icon icon-bill"></i>Faturas</a></li>            
           </ul>
         </nav>
         <div class="content-inner">
@@ -125,6 +126,14 @@
                     </div>
                     <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-primary">Faturar</button>  	                                                
                     <div class="card-body">
+                    <%ArrayList<String> messages = (ArrayList<String>)request.getAttribute("messages"); %>
+                    <%if(messages!=null){ %>
+                    	<%for(String s : messages){ %>
+                           <div class="alert alert-danger" role="alert">
+  								<strong>Erro!</strong><%=" " + s %>
+						   </div>
+						 <% } %>
+                    <%}%>
                       <table class="table table-bordered table-hover">
                         <thead>
                           <tr>
@@ -132,6 +141,7 @@
                             <th>Data</th>
                             <th>Compras</th>
                             <th>Juros</th>
+                            <th>Pagamentos</th>
                           </tr>
                         </thead>
                        <% ArrayList<Fatura> faturas = (ArrayList<Fatura>)request.getAttribute("faturas");%>
@@ -142,7 +152,21 @@
                           		<td><%=c.getCartao() %></td>
                           		<td><%=c.getMes()+"/"+c.getAno() %></td>
                           		<td><%=c.valorDeCompras(c.getCartao(), c.getMes(), c.getAno()) %></td>
-                          		<td><%=ClientesDAO.pesquisarCartao(c.getCartao()).getDebito() %></td>                            
+                          		<%
+                          			AdministradoraCartaoDeCredito adm = new AdministradoraCartaoDeCredito();
+                          			int mes=c.getMes();
+                          			int ano=c.getAno();
+                          			if(mes==1){
+                          				ano-=1;
+                          				mes=12;
+                          			}else{
+                              			mes-=1;
+                          			}
+                          			System.out.println(mes);
+                          			System.out.println(ano);
+                          		%>
+                          		<td><%=adm.calcularResiduo(c.getCartao(), mes, ano)%></td> 
+                          		<td><a href="Pagamento?cartao=<%=c.getCartao()%>&mes=<%=c.getMes()%>&ano=<%=c.getAno()%>"><button type="button" class="btn btn-white">Pagamentos<span class="caret"></span></button></a>                     		                           
                           	</tr>                         	
                         </tbody>
                         <%}%>
@@ -165,12 +189,12 @@
 					            	<form action="Fatura" method="post" id="form1">
 					                    <div class="form-group">
 						                  <div class="input-group date" id="datepicker">
-						                    <input type="hidden" name="action" value="faturar">
 										    <input type="text" class="form-control" readonly="readonly" name="data">
 										    <div class="input-group-addon">
 										        <span class="glyphicon glyphicon-th"></span>
 										    </div>
 										  </div>
+									        <input type="hidden" name="acao" value="faturar">										    									  
                 						</div>          
 					            	</form>
 					            </div>

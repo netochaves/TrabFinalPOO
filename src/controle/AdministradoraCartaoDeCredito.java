@@ -66,7 +66,6 @@ public class AdministradoraCartaoDeCredito implements InterfaceCartaoDeCredito {
             ParcelamentoInvalido {
         checkCnpj(cnpj);
         checkParcelamento(parcelas);
-        System.out.println(estado);
         Estabelecimento e = new Estabelecimento(cnpj,nome,parcelas,endereco,cidade,estado,email,telefone);
         EstabelecimentoDAO.inserir(e);
     }
@@ -93,7 +92,8 @@ public class AdministradoraCartaoDeCredito implements InterfaceCartaoDeCredito {
         if(e.getParcelas() < parcelas) throw new ParcelamentoInvalido();
 
         Cliente c = ClientesDAO.pesquisarCartao(cartao);
-
+        if(c==null)throw new ClienteNaoEncontrado();
+        
         if(c.getLimite() < valor) throw new LimiteExcedido();
         if((c.getLimite()-c.limiteDosDependentes()) < valor) throw new LimiteExcedido();
 
@@ -115,7 +115,10 @@ public class AdministradoraCartaoDeCredito implements InterfaceCartaoDeCredito {
             compra = new Compra(cartao,data,estabelecimento,valorParcelado,parcelas);
 
         CompraDAO.inserir(compra);
-        // int count=1;
+        Fatura f = FaturaDAO.pesquisar(data.getMonth()+1, data.getYear()+1900, cartao);
+        f.setValor(valor+f.getValor());
+        f.setValorFinal(valor+f.getValorFinal());
+
         int aux = parcelas-1;
         int month = data.getMonth();
         while (aux > 0){
@@ -125,15 +128,24 @@ public class AdministradoraCartaoDeCredito implements InterfaceCartaoDeCredito {
             aux--;
         }
     }
+    public double calcularResiduo(int cartao, int mes, int ano) throws DataInvalida, CartaoInvalido {
+        double residuo = 0;
+        checkData(mes,ano);
+        checkCartao(cartao);
 
+        residuo = FaturaDAO.getValor(cartao,mes,ano) - PagamentoDAO.getValorPagamentos(cartao,mes,ano);
+
+        return residuo;
+    }
     @Override
     public double valorDeCompras(int mes, int ano, int cartao) throws CartaoInexistente, DataInvalida, CartaoInvalido {
         checkCartao(cartao);
         checkData(mes,ano);
         Cliente c = ClientesDAO.pesquisarCartao(cartao);
-        
+
         mes-=1;
         ano-=1900;
+        
         double s = 0;
         for (Compra compra : CompraDAO.getAll()) {
             if (compra.getCartao() == c.getNumCartao()){
@@ -145,17 +157,26 @@ public class AdministradoraCartaoDeCredito implements InterfaceCartaoDeCredito {
         return s;
     }
     @Override
-    public double faturar(int cartao, int mes, int ano) throws CartaoInexistente, FaturaInexistente, DataInvalida, CartaoInvalido {
+    public double faturar(int cartao, int mes, int ano) throws CartaoInexistente, FaturaInexistente, DataInvalida, CartaoInvalido,FaturaJaExistente {
         checkCartao(cartao);
         checkData(mes,ano);
-
+        checkFaturaJaExistente(mes, ano);
+        
         Date date = new Date(ano,mes,1);
 
         Fatura f = new Fatura(mes,ano,cartao);
 
         Cliente c = ClientesDAO.pesquisarCartao(cartao);
+        
+        int ano1 = ano;
+        if(mes == 1)
+             ano1 = ano-1;
 
-        if(c.getDebito()==0){
+        int mes1 = mes - 1;
+        
+        double residuo=calcularResiduo(cartao, mes1, ano1);
+        		       		
+        if(residuo==0){
             date.setMonth(date.getMonth()-1);
             f.setValor(valorDeCompras(mes,ano,cartao));
             FaturaDAO.inserir(f);
@@ -166,7 +187,7 @@ public class AdministradoraCartaoDeCredito implements InterfaceCartaoDeCredito {
 
         int aux = date1.getMonth();
 
-        f.setValor(this.valorDeCompras(mes,ano,cartao)+c.getDebito()+(c.getDebito()*0.11));
+        f.setValor(this.valorDeCompras(mes,ano,cartao)+residuo+(residuo*0.11));
         date1.setMonth(++aux);
         
         FaturaDAO.inserir(f);
@@ -185,9 +206,9 @@ public class AdministradoraCartaoDeCredito implements InterfaceCartaoDeCredito {
             checkFaturaInexistente(mes, ano, cartao);
             
             Fatura f = FaturaDAO.pesquisar(mes, ano, cartao);
-            
-            Cliente c = ClientesDAO.pesquisarCartao(cartao);
 
+            Cliente c = ClientesDAO.pesquisarCartao(cartao);
+            if(c==null)throw new CartaoInexistente();
             if (valor<(f.getValor()*0.1)||valor>f.getValor()) throw new PagamentoInvalido();
 
             if (date.before(c.getUltimaFatura())) throw new PagamentoInvalido();
@@ -267,7 +288,7 @@ public class AdministradoraCartaoDeCredito implements InterfaceCartaoDeCredito {
         if(f == null) throw new FaturaInexistente();
     }
     public void checkFaturaJaExistente(int mes,int ano) throws FaturaJaExistente {
-        Fatura f = faturas.procurar(mes,ano);
+        Fatura f = FaturaDAO.procurar(mes,ano);
         if(f != null) throw new FaturaJaExistente();
     }
 

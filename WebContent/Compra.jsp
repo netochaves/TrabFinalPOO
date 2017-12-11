@@ -86,17 +86,17 @@
             </div>
           </div>
           <!-- Sidebar Navidation Menus--><span class="heading">Main</span>
-          <ul class="list-unstyled">
+         <ul class="list-unstyled">
             <li> <a href="index.html"><i class="icon-home"></i>Home</a></li>
-            <li><a href="#dashvariants" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Clientes </a>
+            <li><a href="#dashvariants" aria-expanded="false" data-toggle="collapse"> <i class="icon icon-user"></i>Clientes </a>
               <ul id="dashvariants" class="collapse list-unstyled">
                 <li><a href="Titular.jsp">Titulares</a></li>
                 <li><a href="Dependente.jsp">Dependentes</a></li>
               </ul>
             </li>
-            <li> <a href="Compra.jsp"> <i class="icon-grid"></i>Compras </a></li>
-            <li> <a href="charts.html"> <i class="fa fa-bar-chart"></i>Faturas </a></li>
-            <li class="active"><a href="forms.html"> <i class="icon-padnote"></i>Pagamentos</a></li>
+            <li> <a href="Estabelecimento"> <i class="icon icon-home"></i>Estabelecimentos </a></li>
+            <li> <a href="Compra"> <i class="icon icon-check"></i>Compras </a></li>
+            <li class="active"><a href="Fatura.jsp"> <i class="icon icon-bill"></i>Faturas</a></li>            
           </ul>
         </nav>
         <div class="content-inner">
@@ -152,7 +152,7 @@
                         </div>
                         <div class="form-group">
 		                  <div class="input-group date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
-						    <input type="text" class="form-control" readonly="readonly" name="data">
+						    <input type="text" class="form-control" readonly="readonly" name="data" required>
 						    <div class="input-group-addon">
 						        <span class="glyphicon glyphicon-th"></span>
 						    </div>

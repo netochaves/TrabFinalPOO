@@ -16,6 +16,7 @@ import excecoes.CartaoInexistente;
 import excecoes.CartaoInvalido;
 import excecoes.DataInvalida;
 import excecoes.FaturaInexistente;
+import excecoes.FaturaJaExistente;
 import model.Cliente;
 import model.Fatura;
 
@@ -28,10 +29,11 @@ public class FaturaServlet extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+		request.getRequestDispatcher("/Fatura.jsp").forward(request, response);
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String action = request.getParameter("action");
+		String action = request.getParameter("acao");
+		ArrayList<String> messages = new ArrayList<>();
 		if(action.equalsIgnoreCase("faturar")) {
 			String data = request.getParameter("data");
 			String []s=data.split("/");
@@ -40,7 +42,7 @@ public class FaturaServlet extends HttpServlet {
 			
 			AdministradoraCartaoDeCredito adm = new AdministradoraCartaoDeCredito();
 			ArrayList<Cliente> clientes = ClientesDAO.getAllClientes();
-			System.out.println(clientes.size());
+			
 			for (Cliente c : clientes) {
 				try {
 					adm.faturar(c.getNumCartao(), mes, ano);
@@ -52,13 +54,16 @@ public class FaturaServlet extends HttpServlet {
 					e.printStackTrace();
 				} catch (CartaoInvalido e) {
 					e.printStackTrace();
+				} catch (FaturaJaExistente e) {
+					String msg = "Esta fatura já existe";
+					messages.add(msg);
 				}
 			}
 		}else if(action.equalsIgnoreCase("pesquisar")) {
 			int cartao = Integer.parseInt(request.getParameter("pesquisa"));
 			request.setAttribute("faturas", FaturaDAO.getAllCartao(cartao));
 		}
-		
+		request.setAttribute("messages", messages);
 		request.getRequestDispatcher("/Fatura.jsp").forward(request, response);
 	}
 

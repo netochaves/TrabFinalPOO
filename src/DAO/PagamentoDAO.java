@@ -24,18 +24,41 @@ public class PagamentoDAO {
             e.printStackTrace();
         }
     }
-    public static ArrayList<Pagamento> getPagamentosFromMonth(int mes,int ano){
+    public static double getValorPagamentos(int cartao,int mes,int ano) {
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
-        ArrayList<Pagamento> pagamentos = null;
-        Pagamento p;
+        ResultSet rst = null;
+        double valorPagamentos = 0;
         try {
-            stmt = con.prepareStatement("SELECT * FROM pagamento WHERE mes = ? AND ano = ?");
+            stmt = con.prepareStatement("SELECT * FROM pagamento WHERE mes = ? AND ano = ? AND cartao = ?");
             stmt.setInt(1,mes);
             stmt.setInt(2,ano);
+            stmt.setInt(3,cartao);
+            rst = stmt.executeQuery();
+            while(rst.next()){
+                double valor = rst.getDouble("valor");
+                valorPagamentos += valor;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            ConnectionFactory.closeConnection(con,stmt,rst);
+        }
+        return valorPagamentos;
+    }
+    public static ArrayList<Pagamento> getPagamentos(int cartao,int mes,int ano){
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ArrayList<Pagamento> pagamentos = new ArrayList<>();
+        Pagamento p;
+        try {
+            stmt = con.prepareStatement("SELECT * FROM pagamento WHERE cartao = ? AND mes = ? AND ano = ?");
+            stmt.setInt(1,cartao);
+            stmt.setInt(2,mes);
+            stmt.setInt(3,ano);
             ResultSet rst = stmt.executeQuery();
             while(rst.next()){
-                p = new Pagamento(rst.getInt("cartao"),rst.getInt("mes"),rst.getInt("ano"),rst.getDouble("valor"));
+                p = new Pagamento(rst.getInt("cartao"),rst.getInt("ano"),rst.getInt("mes"),rst.getDouble("valor"));
                 pagamentos.add(p);
             }
         } catch (SQLException e) {

@@ -45,15 +45,23 @@ public class CompraServlet extends HttpServlet {
 		double valor = Double.parseDouble(req.getParameter("valor"));
 	
 		String data = req.getParameter("data");
+		
 		String []s = data.split("/");
+		if(s.length<=1) {
+			String msg = "Porfavor insira uma data";
+			messages.add(msg);
+			req.setAttribute("messages", messages);
+			req.setAttribute("compras", CompraDAO.getAll());
+			req.getRequestDispatcher("/Compra.jsp").forward(req, resp);
+		}
 		int mes = Integer.parseInt(s[1]);
 		int dia = Integer.parseInt(s[0]);
 		int ano = Integer.parseInt(s[2]);
 		if(mes==12) {mes-=1;}
 		ano-=1900;
 		Date date=new Date(ano,mes,dia);
-		
 		AdministradoraCartaoDeCredito adm = new AdministradoraCartaoDeCredito();
+		
 		try {
 			adm.registrarCompra(date, cartao, estabelecimento, valor, parcelas);
 		} catch (CartaoInexistente e) {
@@ -84,6 +92,7 @@ public class CompraServlet extends HttpServlet {
 		} catch (FaturaJaExistente e) {
 			e.printStackTrace();
 		}
+		req.setAttribute("messages", messages);
 		req.setAttribute("compras", CompraDAO.getAll());
 		req.getRequestDispatcher("/Compra.jsp").forward(req, resp);
 		
